@@ -6,14 +6,39 @@ import WebsocketConnection from '../WebsocketConnection';
 
 function DEFAULT_CONFIG_DECORATOR(config) {
   if (config.sessionURL) {
-    config.sessionURL = config.sessionURL.replaceAll(
-      'USE_HOSTNAME',
-      window.location.hostname
-    );
-    config.sessionURL = config.sessionURL.replaceAll(
-      'USE_HOST',
-      window.location.host
-    );
+
+    try{
+      if(config.sessionURL.includes("USE_SP_HOST") || config.sessionURL.includes("use_sp_host")){
+        // 算盘定制化wss://USE_HOSTNAME:9008/ws
+        const items = config.sessionURL.split(":")
+        //[ 'wss', '//USE_HOSTNAME', '9008/ws' ]
+        // /proxr/1001463/70637/cf72904013ee11eeac51dd322aa473a3/18069/index.html
+        const reg = /^(.*)\/\d+\/index\.html$/
+        // '/proxr/1001463/70637/cf72904013ee11eeac51dd322aa473a3'
+        config.sessionURL = items[0] + "://"+window.location.hostname+reg.exec(window.location.pathname)[1] + "/" +items[2]
+      }
+    }catch(errors){
+      console.log('detect non-sp-env , change to local env...')
+      config.sessionURL = config.sessionURL.replaceAll(
+        'USE_HOSTNAME',
+        window.location.hostname
+      );
+      config.sessionURL = config.sessionURL.replaceAll(
+        'USE_HOST',
+        window.location.host
+      );
+      config.sessionURL = config.sessionURL.replaceAll(
+        'use_sp_host',
+        window.location.hostname
+      );
+      config.sessionURL = config.sessionURL.replaceAll(
+        'USE_SP_HOST',
+        window.location.hostname
+      );
+
+    }
+  
+
   }
   return config;
 }

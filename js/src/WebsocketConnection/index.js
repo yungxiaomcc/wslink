@@ -104,7 +104,7 @@ function WebsocketConnection(publicAPI, model) {
   publicAPI.getUrl = () =>
     model.connection ? model.connection.url : undefined;
 
-  function cleanUp(timeout = 10) {
+  function cleanUp(timeout = 20) {
     if (
       model.connection &&
       model.connection.readyState === 1 &&
